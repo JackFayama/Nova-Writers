@@ -129,6 +129,7 @@
       transform: scale(0.95);
       opacity: 0;
       transition: all 0.3s ease;
+      position: relative;
     }
     
     .modal-overlay.show .modal-box {
@@ -155,29 +156,54 @@
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
     }
 
-    /* User profile clickable */
-    .user-profile {
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .user-profile:hover {
-      transform: scale(1.05);
-    }
-
     /* Account dropdown hover */
     .account-link {
       position: relative;
     }
 
-    /* Account page styles */
-    .account-page {
+    /* Page views */
+    .page-view {
       display: none;
     }
-    .account-page.active {
+    .page-view.active {
       display: block;
     }
-    .dashboard-page.hidden {
-      display: none;
+
+    /* Close button styles */
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0,0,0,0.1);
+      border: none;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .modal-close:hover {
+      background: rgba(0,0,0,0.2);
+    }
+
+    /* Notification badge */
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -189,30 +215,22 @@
         <h1 class="text-2xl font-bold text-green-600 cursor-pointer" onclick="showDashboard()">Nova Prime</h1>
       </div>
       
-      <!-- User Info - Clickable (only visible on account page) -->
-      <div id="userInfo" class="hidden md:flex items-center space-x-4 user-profile" onclick="showUserModal()" style="display: none;">
-        <div class="text-right">
-          <div class="text-sm font-medium text-gray-800" id="welcomeName">User</div>
-          <div class="text-xs text-gray-500">ID: <span id="userId">0000000000</span></div>
-        </div>
-        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-          <span id="userInitials">U</span>
-        </div>
-      </div>
-      
       <!-- Desktop Navigation -->
-      <nav class="hidden md:flex space-x-6 text-sm">
+      <nav class="hidden md:flex space-x-6 text-sm absolute left-1/2 transform -translate-x-1/2">
         <a href="client" class="hover:text-green-600 transition-colors font-medium">Find Talent</a>
         <a href="task" class="hover:text-green-600 transition-colors font-medium">Find Work</a>
         <a href="project" class="hover:text-green-600 transition-colors font-medium">My Projects</a>
         <div class="account-link relative">
-          <a href="#" class="hover:text-green-600 transition-colors font-medium" onclick="toggleAccountDropdown(event)" id="accountNavLink">My Account</a>
+          <a href="#" class="hover:text-green-600 transition-colors font-medium" onclick="toggleAccountDropdown(event)">My Account</a>
           <div id="accountDropdown" class="desktop-dropdown">
             <div class="py-2">
-              <a href="#" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors font-medium" onclick="showAccountOverview(event)">Account Overview</a>
-              <a href="profile" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors font-medium">Profile Settings</a>
+              <a href="#" onclick="showAccountOverview()" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors font-medium">Account Overview</a>
+              <a href="#" onclick="showProfileModal()" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors font-medium">Profile Settings</a>
               <a href="security" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors font-medium">Security</a>
-              <a href="notifications" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors font-medium">Notifications</a>
+              <div class="relative">
+                <a href="#" onclick="showNotificationsModal()" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors font-medium">Notifications</a>
+                <span id="notificationBadge" class="notification-badge hidden">0</span>
+              </div>
             </div>
           </div>
         </div>
@@ -230,22 +248,23 @@
 
       <!-- Professional Mobile Navigation Dropdown -->
       <div id="mobile-menu" class="md:hidden mobile-dropdown">
-        <div id="mobileUserInfo" class="py-2 px-4 border-b border-gray-100 user-profile" onclick="showUserModal()" style="display: none;">
-          <div class="text-sm font-medium text-gray-800" id="mobileWelcomeName">User</div>
-          <div class="text-xs text-gray-500">ID: <span id="mobileUserId">0000000000</span></div>
-        </div>
         <nav class="py-2">
           <a href="client" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Find Talent</a>
           <a href="task" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Find Work</a>
           <a href="project" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">My Projects</a>
-          <a href="#" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium" onclick="showAccountOverview(event)" id="mobileAccountLink">My Account</a>
+          <a href="#" onclick="showAccountOverview()" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Account Overview</a>
+          <a href="#" onclick="showProfileModal()" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Profile Settings</a>
+          <div class="relative">
+            <a href="#" onclick="showNotificationsModal()" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium">Notifications</a>
+            <span id="mobileNotificationBadge" class="notification-badge hidden">0</span>
+          </div>
         </nav>
       </div>
     </div>
   </header>
 
-  <!-- Dashboard Page -->
-  <div id="dashboardPage" class="dashboard-page">
+  <!-- Dashboard View -->
+  <div id="dashboardView" class="page-view active">
     <!-- Main Content -->
     <main class="pt-20 pb-32">
       <!-- Hero Section -->
@@ -404,11 +423,10 @@
     </main>
   </div>
 
-  <!-- Account Page -->
-  <div id="accountPage" class="account-page">
-    <!-- Main Content -->
+  <!-- Account Overview View -->
+  <div id="accountView" class="page-view">
     <main class="pt-20 pb-32">
-      <!-- Balance Overview - Now at the top -->
+      <!-- Balance Overview -->
       <section class="py-6">
         <div class="max-w-6xl mx-auto px-4">
           <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -502,18 +520,16 @@
     </div>
   </footer>
 
-  <!-- User Profile Modal -->
-  <div id="userModal" class="modal-overlay">
+  <!-- Profile Settings Modal -->
+  <div id="profileModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeModal('profileModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">User Profile</h3>
-          <button onclick="closeModal('userModal')" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Profile Settings</h3>
         
         <div class="text-center mb-6">
           <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
@@ -543,21 +559,39 @@
     </div>
   </div>
 
+  <!-- Notifications Modal -->
+  <div id="notificationsModal" class="modal-overlay">
+    <div class="modal-box">
+      <button onclick="closeModal('notificationsModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Notifications</h3>
+        
+        <div class="max-h-96 overflow-y-auto history-scroll">
+          <ul class="space-y-4" id="notificationList">
+            <li class="text-gray-400 text-sm text-center py-8">No notifications yet.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Deposit Payment Method Selection Modal -->
   <div id="depositPaymentMethodModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeModal('depositPaymentMethodModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Select Payment Method</h3>
-          <button onclick="closeModal('depositPaymentMethodModal')" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Select Payment Method</h3>
         
         <div class="space-y-4">
-          <!-- M-PESA in separate bar -->
+          <!-- M-PESA -->
           <div class="payment-method bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200 hover:border-green-400" onclick="selectDepositPaymentMethod('mpesa')">
             <div class="flex items-center space-x-4">
               <div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-md">
@@ -570,11 +604,13 @@
             </div>
           </div>
           
-          <!-- Airtel Money in separate bar -->
+          <!-- Airtel Money -->
           <div class="payment-method bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border-2 border-red-200 hover:border-red-400" onclick="selectDepositPaymentMethod('airtel')">
             <div class="flex items-center space-x-4">
               <div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-md">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Airtel_logo_logotype_emblem.png" alt="Airtel Money" class="w-12 h-8 object-contain" />
+                <svg class="w-12 h-8 text-red-600" viewBox="0 0 100 40" fill="currentColor">
+                  <text x="10" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Airtel</text>
+                </svg>
               </div>
               <div>
                 <h4 class="font-bold text-lg text-gray-800 mb-1">Airtel Money</h4>
@@ -590,18 +626,16 @@
   <!-- Withdraw Payment Method Selection Modal -->
   <div id="withdrawPaymentMethodModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeModal('withdrawPaymentMethodModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Select Payment Method</h3>
-          <button onclick="closeModal('withdrawPaymentMethodModal')" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Select Payment Method</h3>
         
         <div class="space-y-4">
-          <!-- M-PESA in separate bar -->
+          <!-- M-PESA -->
           <div class="payment-method bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200 hover:border-green-400" onclick="selectWithdrawPaymentMethod('mpesa')">
             <div class="flex items-center space-x-4">
               <div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-md">
@@ -614,11 +648,13 @@
             </div>
           </div>
           
-          <!-- Airtel Money in separate bar -->
+          <!-- Airtel Money -->
           <div class="payment-method bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border-2 border-red-200 hover:border-red-400" onclick="selectWithdrawPaymentMethod('airtel')">
             <div class="flex items-center space-x-4">
               <div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-md">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Airtel_logo_logotype_emblem.png" alt="Airtel Money" class="w-12 h-8 object-contain" />
+                <svg class="w-12 h-8 text-red-600" viewBox="0 0 100 40" fill="currentColor">
+                  <text x="10" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Airtel</text>
+                </svg>
               </div>
               <div>
                 <h4 class="font-bold text-lg text-gray-800 mb-1">Airtel Money</h4>
@@ -634,15 +670,13 @@
   <!-- Deposit Modal -->
   <div id="depositModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeModal('depositModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Deposit Funds</h3>
-          <button onclick="closeModal('depositModal')" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Deposit Funds</h3>
         
         <form id="depositForm">
           <div class="mb-4">
@@ -670,15 +704,13 @@
   <!-- Payment Instructions Modal -->
   <div id="paymentInstructionsModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeModal('paymentInstructionsModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Payment Instructions</h3>
-          <button onclick="closeModal('paymentInstructionsModal')" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Payment Instructions</h3>
         
         <div class="p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg">
           <p class="font-medium mb-2">Payment Instructions:</p>
@@ -699,15 +731,13 @@
   <!-- Withdraw Modal -->
   <div id="withdrawModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeModal('withdrawModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Withdraw Funds</h3>
-          <button onclick="closeModal('withdrawModal')" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Withdraw Funds</h3>
         
         <form id="withdrawForm">
           <div class="mb-4">
@@ -735,15 +765,13 @@
   <!-- Transfer Modal -->
   <div id="transferModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeModal('transferModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Transfer Balance to Credit</h3>
-          <button onclick="closeModal('transferModal')" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Transfer Balance to Credit</h3>
         
         <form id="transferForm">
           <div class="mb-6">
@@ -772,15 +800,13 @@
   <!-- Transactions Modal -->
   <div id="transactionsModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeModal('transactionsModal')" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Transaction History</h3>
-          <button onclick="closeModal('transactionsModal')" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Transaction History</h3>
         
         <div class="max-h-96 overflow-y-auto history-scroll">
           <ul class="space-y-4" id="transactionList"></ul>
@@ -792,6 +818,11 @@
   <!-- Success Modal -->
   <div id="successModal" class="modal-overlay">
     <div class="modal-box">
+      <button onclick="closeSuccessModal()" class="modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="p-6 text-center">
         <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -815,6 +846,7 @@
     let balance = parseFloat(localStorage.getItem('balance') || '0');
     const credits = parseFloat(localStorage.getItem('credits') || '0');
     let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    let notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
     const paidTasks = JSON.parse(localStorage.getItem('paidTasks') || '[]');
     let newPaymentAdded = false;
 
@@ -835,9 +867,10 @@
       if (userBalance === null) {
         localStorage.setItem("balance", "0");
       }
+      updateNotificationBadge();
     });
 
-    // Add new task payments to transactions if not already logged
+    // Add new task payments to transactions and notifications
     paidTasks.forEach(task => {
       const alreadyLogged = transactions.some(tx => tx.id === task.id);
       if (!alreadyLogged) {
@@ -852,11 +885,23 @@
         transactions.push(tx);
         balance += parseFloat(task.amount);
         newPaymentAdded = true;
+
+        // Add to notifications
+        const notification = {
+          id: task.id,
+          type: 'Payment Received',
+          message: `You received $${task.amount} for completing a task`,
+          date: task.date,
+          time: task.time,
+          read: false
+        };
+        notifications.unshift(notification);
       }
     });
 
-    // Save updated transactions and balance
+    // Save updated data
     localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem('notifications', JSON.stringify(notifications));
     localStorage.setItem('balance', balance.toFixed(2));
 
     if (newPaymentAdded) {
@@ -869,69 +914,52 @@
       return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
     }
 
+    const userInitials = getUserInitials(fullName);
+
     // Page navigation functions
     function showDashboard() {
-      document.getElementById('dashboardPage').classList.remove('hidden');
-      document.getElementById('accountPage').classList.remove('active');
-      document.getElementById('userInfo').style.display = 'none';
-      document.getElementById('mobileUserInfo').style.display = 'none';
-      document.getElementById('accountNavLink').classList.remove('text-green-600');
-      document.getElementById('accountNavLink').classList.add('hover:text-green-600');
-      document.getElementById('mobileAccountLink').classList.remove('text-green-600', 'bg-green-50');
-      document.getElementById('mobileAccountLink').classList.add('text-gray-700');
-      
-      // Close any open dropdowns
-      document.getElementById('accountDropdown').classList.remove('show');
+      document.getElementById('dashboardView').classList.add('active');
+      document.getElementById('accountView').classList.remove('active');
+      closeAllDropdowns();
     }
 
-    function showAccountOverview(event) {
-      event.preventDefault();
-      document.getElementById('dashboardPage').classList.add('hidden');
-      document.getElementById('accountPage').classList.add('active');
-      document.getElementById('userInfo').style.display = 'flex';
-      document.getElementById('mobileUserInfo').style.display = 'block';
-      document.getElementById('accountNavLink').classList.add('text-green-600');
-      document.getElementById('accountNavLink').classList.remove('hover:text-green-600');
-      document.getElementById('mobileAccountLink').classList.add('text-green-600', 'bg-green-50');
-      document.getElementById('mobileAccountLink').classList.remove('text-gray-700');
-      
-      // Close dropdown
-      document.getElementById('accountDropdown').classList.remove('show');
-      
-      // Initialize account page data
-      initializeAccountPage();
+    function showAccountOverview() {
+      document.getElementById('dashboardView').classList.remove('active');
+      document.getElementById('accountView').classList.add('active');
+      updateBalanceDisplay();
+      closeAllDropdowns();
     }
 
-    function initializeAccountPage() {
-      // Display user info and balances
-      const userInitials = getUserInitials(fullName);
-      document.getElementById('welcomeName').textContent = fullName;
-      document.getElementById('userId').textContent = mobileNumber;
-      document.getElementById('userInitials').textContent = userInitials;
-      document.getElementById('mobileWelcomeName').textContent = fullName;
-      document.getElementById('mobileUserId').textContent = mobileNumber;
-      
+    function closeAllDropdowns() {
+      document.getElementById('accountDropdown').classList.remove('show');
+      document.getElementById('mobile-menu').classList.remove('show');
+      document.getElementById('hamburger-icon').classList.remove('hidden');
+      document.getElementById('close-icon').classList.add('hidden');
+    }
+
+    // Update balance display
+    function updateBalanceDisplay() {
       document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
       document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
       document.getElementById('creditBalance').textContent = `$${credits.toFixed(2)}`;
     }
 
-    // Desktop account dropdown
-    function toggleAccountDropdown(event) {
-      event.preventDefault();
-      const dropdown = document.getElementById('accountDropdown');
-      dropdown.classList.toggle('show');
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-      const accountLink = document.querySelector('.account-link');
-      const dropdown = document.getElementById('accountDropdown');
+    // Update notification badge
+    function updateNotificationBadge() {
+      const unreadCount = notifications.filter(n => !n.read).length;
+      const badge = document.getElementById('notificationBadge');
+      const mobileBadge = document.getElementById('mobileNotificationBadge');
       
-      if (!accountLink.contains(event.target)) {
-        dropdown.classList.remove('show');
+      if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.classList.remove('hidden');
+        mobileBadge.textContent = unreadCount;
+        mobileBadge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+        mobileBadge.classList.add('hidden');
       }
-    });
+    }
 
     // Modal functions
     function showModal(modalId) {
@@ -958,16 +986,71 @@
       }
     }
 
-    // User profile modal
-    function showUserModal() {
-      const userInitials = getUserInitials(fullName);
+    // Profile modal
+    function showProfileModal() {
       document.getElementById('modalUserInitials').textContent = userInitials;
       document.getElementById('modalFullName').textContent = fullName;
-      document.getElementById('modalEmail').textContent = email; // Now shows the user's signup email
+      document.getElementById('modalEmail').textContent = email;
       document.getElementById('modalMobile').textContent = mobileNumber;
       document.getElementById('modalUserId').textContent = mobileNumber;
-      showModal('userModal');
+      showModal('profileModal');
+      closeAllDropdowns();
     }
+
+    // Notifications modal
+    function showNotificationsModal() {
+      displayNotifications();
+      showModal('notificationsModal');
+      closeAllDropdowns();
+      
+      // Mark all as read
+      notifications.forEach(n => n.read = true);
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+      updateNotificationBadge();
+    }
+
+    function displayNotifications() {
+      const notificationList = document.getElementById('notificationList');
+      if (notifications.length === 0) {
+        notificationList.innerHTML = '<li class="text-gray-400 text-sm text-center py-8">No notifications yet.</li>';
+      } else {
+        notificationList.innerHTML = '';
+        notifications.forEach(notification => {
+          const li = document.createElement('li');
+          li.className = `p-4 rounded-lg shadow border-l-4 ${
+            notification.read ? 'border-gray-300 bg-gray-50' : 'border-green-500 bg-green-50'
+          }`;
+          li.innerHTML = `
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-semibold text-gray-800">${notification.type}</p>
+                <p class="text-sm text-gray-600 mt-1">${notification.message}</p>
+                <p class="text-xs text-gray-500 mt-2">${notification.date} at ${notification.time}</p>
+              </div>
+              ${!notification.read ? '<div class="w-2 h-2 bg-green-500 rounded-full"></div>' : ''}
+            </div>
+          `;
+          notificationList.appendChild(li);
+        });
+      }
+    }
+
+    // Desktop account dropdown
+    function toggleAccountDropdown(event) {
+      event.preventDefault();
+      const dropdown = document.getElementById('accountDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const accountLink = document.querySelector('.account-link');
+      const dropdown = document.getElementById('accountDropdown');
+      
+      if (!accountLink.contains(event.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
 
     // Payment method selection for deposit
     function showDepositMethodModal() {
@@ -981,9 +1064,8 @@
     }
 
     function showDepositModal() {
-      // Auto-fill user details with signup email
       document.getElementById('mobileNumber').value = mobileNumber;
-      document.getElementById('paymentReference').value = email; // Uses signup email
+      document.getElementById('paymentReference').value = email;
       showModal('depositModal');
     }
 
@@ -999,9 +1081,8 @@
     }
 
     function showWithdrawModal() {
-      // Auto-fill user details with signup email
       document.getElementById('withdrawPhone').value = mobileNumber;
-      document.getElementById('withdrawReference').value = email; // Uses signup email
+      document.getElementById('withdrawReference').value = email;
       showModal('withdrawModal');
     }
 
@@ -1026,7 +1107,6 @@
 
     // Display transactions
     function displayTransactions() {
-      // Sort transactions by date and time descending
       transactions.sort((a, b) => {
         const aDate = new Date(`${a.date} ${a.time}`);
         const bDate = new Date(`${b.date} ${b.time}`);
@@ -1134,10 +1214,8 @@
       const amountInUSD = (kesAmount / exchangeRate).toFixed(2);
       depositData = { kesAmount, amountInUSD, mobileNumber, paymentReference };
 
-      // Close deposit modal and show payment instructions
       closeModal('depositModal');
       
-      // Show payment instructions modal
       document.getElementById("payAmount").textContent = `KES ${kesAmount}`;
       document.getElementById("kesEquivalent").textContent = `This equals exactly $${amountInUSD} USD`;
       document.getElementById("userMobile").textContent = mobileNumber;
@@ -1175,6 +1253,19 @@
       transactions.unshift(transaction);
       localStorage.setItem("transactions", JSON.stringify(transactions));
 
+      // Add notification
+      const notification = {
+        id: Date.now(),
+        type: 'Deposit Successful',
+        message: `Your deposit of $${depositData.amountInUSD} has been processed successfully`,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: false
+      };
+      notifications.unshift(notification);
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+      updateNotificationBadge();
+
       usedIds.push(enteredMpesaId);
       localStorage.setItem("usedMpesaIds", JSON.stringify(usedIds));
 
@@ -1188,15 +1279,10 @@
         time: new Date().toLocaleTimeString(),
       });
 
-      // Hide input
       mpesaIdInput.type = "password";
 
       showSuccessModal(`Deposit successful. You deposited KES ${depositData.kesAmount} which equals $${depositData.amountInUSD} USD.`, () => {
-        // Update balances
-        document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
-        document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
-        
-        // Reset forms and close modals
+        updateBalanceDisplay();
         depositForm.reset();
         mpesaConfirmForm.reset();
         mpesaIdInput.type = "text";
@@ -1256,6 +1342,19 @@
       transactions.unshift(transaction);
       localStorage.setItem("transactions", JSON.stringify(transactions));
 
+      // Add notification
+      const notification = {
+        id: Date.now(),
+        type: 'Withdrawal Processed',
+        message: `Your withdrawal of $${usdAmount.toFixed(2)} has been processed and sent to your M-PESA`,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: false
+      };
+      notifications.unshift(notification);
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+      updateNotificationBadge();
+
       // Send withdrawal notification email
       emailjs.send("service_t8vherg", "template_sqgf423", {
         mobileNumber: phone,
@@ -1266,11 +1365,7 @@
       });
 
       showSuccessModal(`Withdrawal of KES ${kesAmount} ( $${usdAmount} ) successful. Funds will be sent to your M-PESA.`, () => {
-        // Update balances
-        document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
-        document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
-        
-        // Reset form and close modal
+        updateBalanceDisplay();
         withdrawForm.reset();
         withdrawUsdEquivalent.textContent = "";
         closeModal('withdrawModal');
@@ -1303,7 +1398,6 @@
       localStorage.setItem('balance', balance.toFixed(2));
       localStorage.setItem('credits', newCredits.toFixed(2));
 
-      // Create transaction record
       const now = new Date();
       const tx = {
         type: 'Transfer',
@@ -1316,13 +1410,21 @@
       transactions.unshift(tx);
       localStorage.setItem('transactions', JSON.stringify(transactions));
 
+      // Add notification
+      const notification = {
+        id: Date.now(),
+        type: 'Transfer Completed',
+        message: `Successfully transferred $${amount.toFixed(2)} from balance to credits`,
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: false
+      };
+      notifications.unshift(notification);
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+      updateNotificationBadge();
+
       showSuccessModal(`Successfully transferred $${amount.toFixed(2)} to credits.`, () => {
-        // Update balances
-        document.getElementById('totalBalance').textContent = `$${(balance + newCredits).toFixed(2)}`;
-        document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
-        document.getElementById('creditBalance').textContent = `$${newCredits.toFixed(2)}`;
-        
-        // Reset form and close modal
+        updateBalanceDisplay();
         transferForm.reset();
         transferMessage.textContent = '';
         closeModal('transferModal');
@@ -1338,6 +1440,9 @@
         }
       });
     });
+
+    // Initialize the page
+    updateBalanceDisplay();
   </script>
 </body>
 </html>
