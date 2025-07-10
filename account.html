@@ -245,7 +245,7 @@
             <span class="font-semibold">Deposit</span>
           </button>
           
-          <button onclick="showWithdrawModal()" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+          <button onclick="showWithdrawMethodModal()" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
             <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
             </svg>
@@ -321,21 +321,21 @@
     </div>
   </div>
 
-  <!-- Payment Method Selection Modal -->
-  <div id="paymentMethodModal" class="modal-overlay">
+  <!-- Deposit Payment Method Selection Modal -->
+  <div id="depositPaymentMethodModal" class="modal-overlay">
     <div class="modal-box">
       <div class="p-6">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-xl font-bold text-gray-800">Select Payment Method</h3>
-          <button onclick="closeModal('paymentMethodModal')" class="text-gray-400 hover:text-gray-600">
+          <button onclick="closeModal('depositPaymentMethodModal')" class="text-gray-400 hover:text-gray-600">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="payment-method bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200 hover:border-green-400" onclick="selectPaymentMethod('mpesa')">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="payment-method bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200 hover:border-green-400" onclick="selectDepositPaymentMethod('mpesa')">
             <div class="text-center">
               <div class="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -347,7 +347,49 @@
             </div>
           </div>
           
-          <div class="payment-method bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border-2 border-red-200 hover:border-red-400" onclick="selectPaymentMethod('airtel')">
+          <div class="payment-method bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border-2 border-red-200 hover:border-red-400" onclick="selectDepositPaymentMethod('airtel')">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-red-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-lg text-gray-800 mb-2">Airtel Money</h4>
+              <p class="text-sm text-gray-600">Airtel Money</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Withdraw Payment Method Selection Modal -->
+  <div id="withdrawPaymentMethodModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Select Payment Method</h3>
+          <button onclick="closeModal('withdrawPaymentMethodModal')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div class="payment-method bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200 hover:border-green-400" onclick="selectWithdrawPaymentMethod('mpesa')">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-lg text-gray-800 mb-2">M-PESA</h4>
+              <p class="text-sm text-gray-600">Safaricom M-PESA</p>
+            </div>
+          </div>
+          
+          <div class="payment-method bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border-2 border-red-200 hover:border-red-400" onclick="selectWithdrawPaymentMethod('airtel')">
             <div class="text-center">
               <div class="w-16 h-16 bg-red-600 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -395,8 +437,24 @@
 
           <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 w-full font-medium transition-colors">Deposit Funds</button>
         </form>
+      </div>
+    </div>
+  </div>
 
-        <div id="mpesaNote" class="mt-6 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden">
+  <!-- Payment Instructions Modal -->
+  <div id="paymentInstructionsModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Payment Instructions</h3>
+          <button onclick="closeModal('paymentInstructionsModal')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg">
           <p class="font-medium mb-2">Payment Instructions:</p>
           <p>Please pay <span id="payAmount" class="font-bold"></span> to <strong>MPESA Till Number 3390928</strong> using your mobile <strong><span id="userMobile"></span></strong>.</p>
           <p id="kesEquivalent" class="text-sm text-green-700 mt-2 font-semibold"></p>
@@ -537,6 +595,7 @@
     const exchangeRate = 131;
     const adminBlockedIds = ["TG804M3B6E", "TG93ALCLNL", "TG77YHISAZ", "123", "123", "123", "123"];
     let selectedPaymentMethod = '';
+    let depositData = {};
 
     // Check login status
     const loggedInUser = localStorage.getItem("loggedInUser");
@@ -631,14 +690,14 @@
       showModal('userModal');
     }
 
-    // Payment method selection
+    // Payment method selection for deposit
     function showDepositMethodModal() {
-      showModal('paymentMethodModal');
+      showModal('depositPaymentMethodModal');
     }
 
-    function selectPaymentMethod(method) {
+    function selectDepositPaymentMethod(method) {
       selectedPaymentMethod = method;
-      closeModal('paymentMethodModal');
+      closeModal('depositPaymentMethodModal');
       showDepositModal();
     }
 
@@ -647,6 +706,17 @@
       document.getElementById('mobileNumber').value = mobileNumber;
       document.getElementById('paymentReference').value = email;
       showModal('depositModal');
+    }
+
+    // Payment method selection for withdraw
+    function showWithdrawMethodModal() {
+      showModal('withdrawPaymentMethodModal');
+    }
+
+    function selectWithdrawPaymentMethod(method) {
+      selectedPaymentMethod = method;
+      closeModal('withdrawPaymentMethodModal');
+      showWithdrawModal();
     }
 
     function showWithdrawModal() {
@@ -761,15 +831,7 @@
 
     // Deposit functionality
     const depositForm = document.getElementById("depositForm");
-    const mpesaNote = document.getElementById("mpesaNote");
-    const payAmountSpan = document.getElementById("payAmount");
-    const userMobileSpan = document.getElementById("userMobile");
-    const kesEquivalent = document.getElementById("kesEquivalent");
-    const mpesaConfirmForm = document.getElementById("mpesaConfirmForm");
-    const mpesaIdInput = document.getElementById("mpesaId");
     const usdEquivalent = document.getElementById("usdEquivalent");
-
-    let depositData = {};
 
     document.getElementById("depositAmountKES").addEventListener("input", function () {
       const kes = parseFloat(this.value);
@@ -793,15 +855,19 @@
       const amountInUSD = (kesAmount / exchangeRate).toFixed(2);
       depositData = { kesAmount, amountInUSD, mobileNumber, paymentReference };
 
-      showSuccessModal("Deposit request has been made! Please follow the payment instructions below.");
-      payAmountSpan.textContent = `KES ${kesAmount}`;
-      kesEquivalent.textContent = `This equals exactly $${amountInUSD} USD`;
-      userMobileSpan.textContent = mobileNumber;
-      mpesaNote.classList.remove("hidden");
-
-      depositForm.querySelector("button").disabled = true;
-      depositForm.querySelectorAll("input").forEach(i => i.disabled = true);
+      // Close deposit modal and show payment instructions
+      closeModal('depositModal');
+      
+      // Show payment instructions modal
+      document.getElementById("payAmount").textContent = `KES ${kesAmount}`;
+      document.getElementById("kesEquivalent").textContent = `This equals exactly $${amountInUSD} USD`;
+      document.getElementById("userMobile").textContent = mobileNumber;
+      showModal('paymentInstructionsModal');
     });
+
+    // MPESA confirmation
+    const mpesaConfirmForm = document.getElementById("mpesaConfirmForm");
+    const mpesaIdInput = document.getElementById("mpesaId");
 
     mpesaConfirmForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -851,14 +917,15 @@
         document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
         document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
         
-        // Reset form
+        // Reset forms and close modals
         depositForm.reset();
-        mpesaNote.classList.add("hidden");
-        depositForm.querySelector("button").disabled = false;
-        depositForm.querySelectorAll("input").forEach(i => i.disabled = false);
+        mpesaConfirmForm.reset();
         mpesaIdInput.type = "text";
         usdEquivalent.textContent = "";
-        closeModal('depositModal');
+        closeModal('paymentInstructionsModal');
+        
+        // Redirect to account page
+        window.location.reload();
       });
     });
 
@@ -927,10 +994,13 @@
         document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
         document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
         
-        // Reset form
+        // Reset form and close modal
         withdrawForm.reset();
         withdrawUsdEquivalent.textContent = "";
         closeModal('withdrawModal');
+        
+        // Redirect to account page
+        window.location.reload();
       });
     });
 
@@ -979,10 +1049,13 @@
         document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
         document.getElementById('creditBalance').textContent = `$${newCredits.toFixed(2)}`;
         
-        // Reset form
+        // Reset form and close modal
         transferForm.reset();
         transferMessage.textContent = '';
         closeModal('transferModal');
+        
+        // Redirect to account page
+        window.location.reload();
       });
     });
 
