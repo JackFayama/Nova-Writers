@@ -15,12 +15,59 @@
     body::-webkit-scrollbar {
       display: none; /* WebKit */
     }
+    
+    /* Ensure footer stays fixed on all devices */
+    .fixed-footer {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 50 !important;
+    }
+    
+    /* Professional mobile menu dropdown */
+    .mobile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      min-width: 200px;
+      max-width: 280px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transform: translateY(-10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease-out;
+    }
+    
+    .mobile-dropdown.show {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .mobile-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: 16px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-bottom: none;
+      border-right: none;
+      transform: rotate(45deg);
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
   <!-- Navigation Bar -->
   <header class="fixed top-0 left-0 w-full z-50 bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center relative">
       <div class="flex items-center space-x-3">
         <h1 class="text-2xl font-bold text-green-600">Nova Prime</h1>
       </div>
@@ -42,16 +89,16 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
-    </div>
 
-    <!-- Mobile Navigation Menu -->
-    <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200 shadow-lg">
-      <nav class="px-4 py-4 space-y-3">
-        <a href="client" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all font-medium">Find Talent</a>
-        <a href="task" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all font-medium">Find Work</a>
-        <a href="project" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all font-medium">My Projects</a>
-        <a href="account" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all font-medium">My Account</a>
-      </nav>
+      <!-- Professional Mobile Navigation Dropdown -->
+      <div id="mobile-menu" class="md:hidden mobile-dropdown">
+        <nav class="py-2">
+          <a href="client" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100 last:border-b-0">Find Talent</a>
+          <a href="task" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100 last:border-b-0">Find Work</a>
+          <a href="project" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100 last:border-b-0">My Projects</a>
+          <a href="account" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium">My Account</a>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -59,7 +106,7 @@
   <main class="pt-20 pb-32">
     <!-- Hero Section -->
     <section class="py-4 sm:py-8">
-      <div class="max-w-5xl mx-auto px-6">
+      <div class="max-w-6xl mx-auto px-4">
         <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl px-6 sm:px-12 py-8 text-center shadow-xl border border-green-100">
           <div class="max-w-3xl mx-auto">
             <h2 class="text-3xl sm:text-4xl font-bold mb-6 text-gray-800 leading-tight">
@@ -213,7 +260,7 @@
   </main>
 
   <!-- Footer -->
-  <footer class="fixed bottom-0 left-0 w-full bg-white text-center py-4 text-gray-500 text-sm z-50 shadow-lg border-t border-gray-200">
+  <footer class="fixed-footer bg-white text-center py-4 text-gray-500 text-sm shadow-lg border-t border-gray-200">
     <p class="font-medium">&copy; 2025 Nova Prime Inc. All rights reserved.</p>
     <div class="space-x-4 mt-1">
       <a href="privacy" class="hover:text-green-600 transition-colors">Privacy</a>
@@ -244,16 +291,16 @@
     const closeIcon = document.getElementById('close-icon');
 
     mobileMenuButton.addEventListener('click', function() {
-      const isMenuOpen = !mobileMenu.classList.contains('hidden');
+      const isMenuOpen = mobileMenu.classList.contains('show');
       
       if (isMenuOpen) {
         // Close menu
-        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('show');
         hamburgerIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');
       } else {
         // Open menu
-        mobileMenu.classList.remove('hidden');
+        mobileMenu.classList.add('show');
         hamburgerIcon.classList.add('hidden');
         closeIcon.classList.remove('hidden');
       }
@@ -263,7 +310,7 @@
     const mobileMenuLinks = mobileMenu.querySelectorAll('a');
     mobileMenuLinks.forEach(link => {
       link.addEventListener('click', function() {
-        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('show');
         hamburgerIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');
       });
@@ -274,8 +321,8 @@
       const isClickInsideMenu = mobileMenu.contains(event.target);
       const isClickOnButton = mobileMenuButton.contains(event.target);
       
-      if (!isClickInsideMenu && !isClickOnButton && !mobileMenu.classList.contains('hidden')) {
-        mobileMenu.classList.add('hidden');
+      if (!isClickInsideMenu && !isClickOnButton && mobileMenu.classList.contains('show')) {
+        mobileMenu.classList.remove('show');
         hamburgerIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');
       }
