@@ -6,29 +6,61 @@
   <title>Nova Prime | Find Freelancers & Jobs</title>
   <link rel="icon" type="image/png" href="nova_favicon.png">
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Hide scrollbar but keep scrolling functionality */
+    body {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* Internet Explorer 10+ */
+    }
+    body::-webkit-scrollbar {
+      display: none; /* WebKit */
+    }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
   <!-- Navigation Bar -->
   <header class="fixed top-0 left-0 w-full z-50 bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center flex-wrap">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <h1 class="text-2xl font-bold text-green-600">Nova Prime</h1>
       </div>
-      <nav class="space-x-6 text-sm mt-2 sm:mt-0">
+      
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-6 text-sm">
         <a href="client" class="hover:text-green-600 transition-colors font-medium">Find Talent</a>
         <a href="task" class="hover:text-green-600 transition-colors font-medium">Find Work</a>
         <a href="project" class="hover:text-green-600 transition-colors font-medium">My Projects</a>
         <a href="account" class="hover:text-green-600 transition-colors font-medium">My Account</a>
       </nav>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg id="hamburger-icon" class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg id="close-icon" class="w-6 h-6 text-gray-600 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation Menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200 shadow-lg">
+      <nav class="px-4 py-4 space-y-3">
+        <a href="client" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all font-medium">Find Talent</a>
+        <a href="task" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all font-medium">Find Work</a>
+        <a href="project" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all font-medium">My Projects</a>
+        <a href="account" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all font-medium">My Account</a>
+      </nav>
     </div>
   </header>
 
   <!-- Main Content -->
-  <main class="pt-20 pb-24">
+  <main class="pt-20 pb-32">
     <!-- Hero Section -->
-    <section class="py-8 sm:py-12">
+    <section class="py-4 sm:py-8">
       <div class="max-w-5xl mx-auto px-6">
-        <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl px-6 sm:px-12 py-12 text-center shadow-xl border border-green-100">
+        <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl px-6 sm:px-12 py-8 text-center shadow-xl border border-green-100">
           <div class="max-w-3xl mx-auto">
             <h2 class="text-3xl sm:text-4xl font-bold mb-6 text-gray-800 leading-tight">
               Hire Freelancers or Find Work 
@@ -100,7 +132,7 @@
     <!-- Freelancers Section -->
     <section class="py-6">
       <div class="max-w-6xl mx-auto px-4">
-        <div class="bg-gray-50 rounded-2xl shadow-sm p-6">
+        <div class="bg-white rounded-2xl shadow-sm p-6">
           <div class="text-left mb-6">
             <h3 class="text-2xl font-bold mb-2 text-gray-800">Top Freelancers</h3>
           </div>
@@ -204,6 +236,50 @@
     if (!loggedInUser) {
       window.location.href = "index.html";
     }
+
+    // Mobile menu functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+    const closeIcon = document.getElementById('close-icon');
+
+    mobileMenuButton.addEventListener('click', function() {
+      const isMenuOpen = !mobileMenu.classList.contains('hidden');
+      
+      if (isMenuOpen) {
+        // Close menu
+        mobileMenu.classList.add('hidden');
+        hamburgerIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      } else {
+        // Open menu
+        mobileMenu.classList.remove('hidden');
+        hamburgerIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+      }
+    });
+
+    // Close mobile menu when clicking on a link
+    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+    mobileMenuLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        mobileMenu.classList.add('hidden');
+        hamburgerIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      });
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const isClickInsideMenu = mobileMenu.contains(event.target);
+      const isClickOnButton = mobileMenuButton.contains(event.target);
+      
+      if (!isClickInsideMenu && !isClickOnButton && !mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+        hamburgerIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      }
+    });
   </script>
 </body>
 </html>
