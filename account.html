@@ -70,47 +70,37 @@
     }
 
     /* Modal Styles */
-    #modalOverlay {
+    .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       z-index: 9999;
       align-items: center;
       justify-content: center;
+      padding: 1rem;
     }
-    #modalBox {
+    
+    .modal-overlay.show {
+      display: flex;
+    }
+    
+    .modal-box {
       background: white;
-      padding: 1.5rem 2rem;
-      border-radius: 0.5rem;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      border-radius: 1rem;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: scale(0.95);
+      opacity: 0;
+      transition: all 0.3s ease;
     }
-    #modalBox button {
-      margin-top: 1rem;
-      background-color: #16a34a;
-      color: white;
-      padding: 0.5rem 1.5rem;
-      border-radius: 0.375rem;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    #modalBox button:hover {
-      background-color: #15803d;
-    }
-
-    /* Tab Styles */
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .tab-button.active {
-      background-color: #16a34a;
-      color: white;
+    
+    .modal-overlay.show .modal-box {
+      transform: scale(1);
+      opacity: 1;
     }
 
     /* Animation for balance cards */
@@ -120,6 +110,25 @@
     .balance-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Payment method cards */
+    .payment-method {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .payment-method:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+    }
+
+    /* User profile clickable */
+    .user-profile {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .user-profile:hover {
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -131,8 +140,8 @@
         <h1 class="text-2xl font-bold text-green-600">Nova Prime</h1>
       </div>
       
-      <!-- User Info -->
-      <div class="hidden md:flex items-center space-x-4">
+      <!-- User Info - Clickable -->
+      <div class="hidden md:flex items-center space-x-4 user-profile" onclick="showUserModal()">
         <div class="text-right">
           <div class="text-sm font-medium text-gray-800" id="welcomeName">User</div>
           <div class="text-xs text-gray-500">ID: <span id="userId">0000000000</span></div>
@@ -144,7 +153,6 @@
       
       <!-- Desktop Navigation -->
       <nav class="hidden md:flex space-x-6 text-sm absolute left-1/2 transform -translate-x-1/2">
-        <a href="dashboard" class="hover:text-green-600 transition-colors font-medium">Dashboard</a>
         <a href="client" class="hover:text-green-600 transition-colors font-medium">Find Talent</a>
         <a href="task" class="hover:text-green-600 transition-colors font-medium">Find Work</a>
         <a href="project" class="hover:text-green-600 transition-colors font-medium">My Projects</a>
@@ -163,12 +171,11 @@
 
       <!-- Professional Mobile Navigation Dropdown -->
       <div id="mobile-menu" class="md:hidden mobile-dropdown">
-        <div class="py-2 px-4 border-b border-gray-100">
+        <div class="py-2 px-4 border-b border-gray-100 user-profile" onclick="showUserModal()">
           <div class="text-sm font-medium text-gray-800" id="mobileWelcomeName">User</div>
           <div class="text-xs text-gray-500">ID: <span id="mobileUserId">0000000000</span></div>
         </div>
         <nav class="py-2">
-          <a href="dashboard" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Dashboard</a>
           <a href="client" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Find Talent</a>
           <a href="task" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Find Work</a>
           <a href="project" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">My Projects</a>
@@ -180,25 +187,8 @@
 
   <!-- Main Content -->
   <main class="pt-20 pb-32">
-    <!-- Account Header -->
-    <section class="py-4 sm:py-6">
-      <div class="max-w-6xl mx-auto px-4">
-        <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl px-6 sm:px-12 py-8 shadow-xl border border-green-100">
-          <div class="text-center">
-            <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
-              <span id="headerUserInitials">U</span>
-            </div>
-            <h2 class="text-2xl sm:text-3xl font-bold mb-2 text-gray-800">
-              Welcome back, <span id="headerWelcomeName">User</span>!
-            </h2>
-            <p class="text-gray-600">Manage your account and finances</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Balance Overview -->
-    <section class="py-4">
+    <!-- Balance Overview - Now at the top -->
+    <section class="py-6">
       <div class="max-w-6xl mx-auto px-4">
         <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div class="balance-card bg-white p-4 sm:p-6 rounded-xl shadow-lg text-center border border-gray-100">
@@ -244,142 +234,37 @@
       </div>
     </section>
 
-    <!-- Action Tabs -->
+    <!-- Action Buttons -->
     <section class="py-4">
       <div class="max-w-6xl mx-auto px-4">
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          <!-- Tab Navigation -->
-          <div class="border-b border-gray-200">
-            <nav class="flex">
-              <button class="tab-button flex-1 py-4 px-6 text-center font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all active" data-tab="transactions">
-                <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-                Transactions
-              </button>
-              <button class="tab-button flex-1 py-4 px-6 text-center font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all" data-tab="deposit">
-                <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                Deposit
-              </button>
-              <button class="tab-button flex-1 py-4 px-6 text-center font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all" data-tab="withdraw">
-                <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                </svg>
-                Withdraw
-              </button>
-              <button class="tab-button flex-1 py-4 px-6 text-center font-medium text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all" data-tab="transfer">
-                <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                </svg>
-                Transfer
-              </button>
-            </nav>
-          </div>
-
-          <!-- Tab Content -->
-          <div class="p-6">
-            <!-- Transactions Tab -->
-            <div id="transactions-tab" class="tab-content active">
-              <h3 class="text-xl font-semibold mb-4 text-gray-800">Recent Transactions</h3>
-              <div class="min-h-[200px]">
-                <ul class="space-y-4" id="transactionList"></ul>
-              </div>
-            </div>
-
-            <!-- Deposit Tab -->
-            <div id="deposit-tab" class="tab-content">
-              <h3 class="text-xl font-semibold mb-4 text-gray-800">Deposit Funds</h3>
-              <div class="max-w-md mx-auto">
-                <form id="depositForm">
-                  <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Amount to Deposit (KES):</label>
-                    <input type="number" id="depositAmountKES" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" min="655" step="1"/>
-                    <p id="usdEquivalent" class="text-xs text-gray-500 italic mt-1"></p>
-                  </div>
-
-                  <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Mobile Number (User ID):</label>
-                    <input type="text" id="mobileNumber" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" pattern="\d{9,12}" title="Enter valid mobile number"/>
-                  </div>
-
-                  <div class="mb-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Payment Reference (User Email):</label>
-                    <input type="text" id="paymentReference" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"/>
-                  </div>
-
-                  <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 w-full font-medium transition-colors">Deposit Funds</button>
-                </form>
-
-                <div id="mpesaNote" class="mt-6 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden">
-                  <p class="font-medium mb-2">Payment Instructions:</p>
-                  <p>Please pay <span id="payAmount" class="font-bold"></span> to <strong>MPESA Till Number 3390928</strong> using your mobile <strong><span id="userMobile"></span></strong>.</p>
-                  <p id="kesEquivalent" class="text-sm text-green-700 mt-2 font-semibold"></p>
-                  <p class="mt-2">Once payment is complete, enter your <strong>MPESA transaction ID</strong> below to confirm.</p>
-
-                  <form id="mpesaConfirmForm" class="mt-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">MPESA Transaction ID:</label>
-                    <input type="text" id="mpesaId" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mb-4" />
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 w-full font-medium transition-colors">Confirm Payment</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-
-            <!-- Withdraw Tab -->
-            <div id="withdraw-tab" class="tab-content">
-              <h3 class="text-xl font-semibold mb-4 text-gray-800">Withdraw Funds</h3>
-              <div class="max-w-md mx-auto">
-                <form id="withdrawForm">
-                  <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Amount to Withdraw (KES):</label>
-                    <input type="number" id="withdrawAmountKES" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" min="3930" step="1" />
-                    <p id="withdrawUsdEquivalent" class="text-xs text-gray-500 italic mt-1"></p>
-                  </div>
-
-                  <div class="mb-4">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Mobile Number (User ID):</label>
-                    <input type="text" id="withdrawPhone" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" />
-                  </div>
-
-                  <div class="mb-6">
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Reference Note (User Email):</label>
-                    <input type="text" id="withdrawReference" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" />
-                  </div>
-
-                  <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 w-full font-medium transition-colors">Withdraw Funds</button>
-                </form>
-              </div>
-            </div>
-
-            <!-- Transfer Tab -->
-            <div id="transfer-tab" class="tab-content">
-              <h3 class="text-xl font-semibold mb-4 text-gray-800">Transfer Balance to Credit</h3>
-              <div class="max-w-md mx-auto">
-                <form id="transferForm">
-                  <div class="mb-6">
-                    <label for="transferAmount" class="block mb-2 text-sm font-medium text-gray-700">Amount to Transfer to Credit ($)</label>
-                    <input
-                      type="number"
-                      id="transferAmount"
-                      min="1"
-                      step="0.01"
-                      required
-                      class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    class="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-black transition-colors font-medium"
-                  >
-                    Transfer to Credit
-                  </button>
-                </form>
-                <p id="transferMessage" class="mt-4 text-sm font-medium text-center"></p>
-              </div>
-            </div>
-          </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <button onclick="showDepositMethodModal()" class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+            <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            <span class="font-semibold">Deposit</span>
+          </button>
+          
+          <button onclick="showWithdrawModal()" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+            <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+            </svg>
+            <span class="font-semibold">Withdraw</span>
+          </button>
+          
+          <button onclick="showTransferModal()" class="bg-gradient-to-r from-gray-700 to-gray-800 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+            <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+            </svg>
+            <span class="font-semibold">Transfer</span>
+          </button>
+          
+          <button onclick="showTransactionsModal()" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center">
+            <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            <span class="font-semibold">History</span>
+          </button>
         </div>
       </div>
     </section>
@@ -395,11 +280,243 @@
     </div>
   </footer>
 
-  <!-- Modal -->
-  <div id="modalOverlay" class="flex">
-    <div id="modalBox">
-      <p id="modalMessage"></p>
-      <button id="modalCloseBtn">OK</button>
+  <!-- User Profile Modal -->
+  <div id="userModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">User Profile</h3>
+          <button onclick="closeModal('userModal')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="text-center mb-6">
+          <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
+            <span id="modalUserInitials">U</span>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
+            <p id="modalFullName" class="text-gray-800 font-semibold">-</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Email</label>
+            <p id="modalEmail" class="text-gray-800 font-semibold">-</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Mobile Number</label>
+            <p id="modalMobile" class="text-gray-800 font-semibold">-</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <label class="block text-sm font-medium text-gray-600 mb-1">User ID</label>
+            <p id="modalUserId" class="text-gray-800 font-semibold">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Method Selection Modal -->
+  <div id="paymentMethodModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Select Payment Method</h3>
+          <button onclick="closeModal('paymentMethodModal')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="payment-method bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-200 hover:border-green-400" onclick="selectPaymentMethod('mpesa')">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-lg text-gray-800 mb-2">M-PESA</h4>
+              <p class="text-sm text-gray-600">Safaricom M-PESA</p>
+            </div>
+          </div>
+          
+          <div class="payment-method bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border-2 border-red-200 hover:border-red-400" onclick="selectPaymentMethod('airtel')">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-red-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-lg text-gray-800 mb-2">Airtel Money</h4>
+              <p class="text-sm text-gray-600">Airtel Money</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deposit Modal -->
+  <div id="depositModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Deposit Funds</h3>
+          <button onclick="closeModal('depositModal')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <form id="depositForm">
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Amount to Deposit (KES):</label>
+            <input type="number" id="depositAmountKES" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" min="655" step="1"/>
+            <p id="usdEquivalent" class="text-xs text-gray-500 italic mt-1"></p>
+          </div>
+
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Mobile Number (User ID):</label>
+            <input type="text" id="mobileNumber" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" pattern="\d{9,12}" title="Enter valid mobile number"/>
+          </div>
+
+          <div class="mb-6">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Payment Reference (User Email):</label>
+            <input type="text" id="paymentReference" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"/>
+          </div>
+
+          <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 w-full font-medium transition-colors">Deposit Funds</button>
+        </form>
+
+        <div id="mpesaNote" class="mt-6 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden">
+          <p class="font-medium mb-2">Payment Instructions:</p>
+          <p>Please pay <span id="payAmount" class="font-bold"></span> to <strong>MPESA Till Number 3390928</strong> using your mobile <strong><span id="userMobile"></span></strong>.</p>
+          <p id="kesEquivalent" class="text-sm text-green-700 mt-2 font-semibold"></p>
+          <p class="mt-2">Once payment is complete, enter your <strong>MPESA transaction ID</strong> below to confirm.</p>
+
+          <form id="mpesaConfirmForm" class="mt-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700">MPESA Transaction ID:</label>
+            <input type="text" id="mpesaId" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 mb-4" />
+            <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 w-full font-medium transition-colors">Confirm Payment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Withdraw Modal -->
+  <div id="withdrawModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Withdraw Funds</h3>
+          <button onclick="closeModal('withdrawModal')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <form id="withdrawForm">
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Amount to Withdraw (KES):</label>
+            <input type="number" id="withdrawAmountKES" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" min="3930" step="1" />
+            <p id="withdrawUsdEquivalent" class="text-xs text-gray-500 italic mt-1"></p>
+          </div>
+
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Mobile Number (User ID):</label>
+            <input type="text" id="withdrawPhone" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+          </div>
+
+          <div class="mb-6">
+            <label class="block mb-2 text-sm font-medium text-gray-700">Reference Note (User Email):</label>
+            <input type="text" id="withdrawReference" required class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+          </div>
+
+          <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 w-full font-medium transition-colors">Withdraw Funds</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transfer Modal -->
+  <div id="transferModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Transfer Balance to Credit</h3>
+          <button onclick="closeModal('transferModal')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <form id="transferForm">
+          <div class="mb-6">
+            <label for="transferAmount" class="block mb-2 text-sm font-medium text-gray-700">Amount to Transfer to Credit ($)</label>
+            <input
+              type="number"
+              id="transferAmount"
+              min="1"
+              step="0.01"
+              required
+              class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-black transition-colors font-medium"
+          >
+            Transfer to Credit
+          </button>
+        </form>
+        <p id="transferMessage" class="mt-4 text-sm font-medium text-center"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions Modal -->
+  <div id="transactionsModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Transaction History</h3>
+          <button onclick="closeModal('transactionsModal')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="max-h-96 overflow-y-auto">
+          <ul class="space-y-4" id="transactionList"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="p-6 text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <p id="successMessage" class="text-gray-800 mb-4"></p>
+        <button onclick="closeSuccessModal()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">OK</button>
+      </div>
     </div>
   </div>
 
@@ -409,6 +526,7 @@
   <script>
     // Initialize variables
     const fullName = localStorage.getItem('fullName') || 'User';
+    const email = localStorage.getItem('email') || 'user@example.com';
     const mobileNumber = localStorage.getItem('mobileNumber') || '0000000000';
     let balance = parseFloat(localStorage.getItem('balance') || '0');
     const credits = parseFloat(localStorage.getItem('credits') || '0');
@@ -418,6 +536,7 @@
 
     const exchangeRate = 131;
     const adminBlockedIds = ["TG804M3B6E", "TG93ALCLNL", "TG77YHISAZ", "123", "123", "123", "123"];
+    let selectedPaymentMethod = '';
 
     // Check login status
     const loggedInUser = localStorage.getItem("loggedInUser");
@@ -472,28 +591,78 @@
     document.getElementById('userInitials').textContent = userInitials;
     document.getElementById('mobileWelcomeName').textContent = fullName;
     document.getElementById('mobileUserId').textContent = mobileNumber;
-    document.getElementById('headerWelcomeName').textContent = fullName.split(' ')[0];
-    document.getElementById('headerUserInitials').textContent = userInitials;
     
     document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
     document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
     document.getElementById('creditBalance').textContent = `$${credits.toFixed(2)}`;
 
     // Modal functions
-    const modalOverlay = document.getElementById("modalOverlay");
-    const modalMessage = document.getElementById("modalMessage");
-    const modalCloseBtn = document.getElementById("modalCloseBtn");
-    const successSound = document.getElementById("successSound");
+    function showModal(modalId) {
+      document.getElementById(modalId).classList.add('show');
+    }
 
-    function showModal(message, callback = null) {
-      modalMessage.textContent = message;
-      modalOverlay.style.display = "flex";
-      successSound.play();
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    function showSuccessModal(message, callback = null) {
+      document.getElementById('successMessage').textContent = message;
+      showModal('successModal');
+      document.getElementById('successSound').play();
       
-      modalCloseBtn.onclick = () => {
-        modalOverlay.style.display = "none";
-        if (callback) callback();
-      };
+      window.successCallback = callback;
+    }
+
+    function closeSuccessModal() {
+      closeModal('successModal');
+      if (window.successCallback) {
+        window.successCallback();
+        window.successCallback = null;
+      }
+    }
+
+    // User profile modal
+    function showUserModal() {
+      document.getElementById('modalUserInitials').textContent = userInitials;
+      document.getElementById('modalFullName').textContent = fullName;
+      document.getElementById('modalEmail').textContent = email;
+      document.getElementById('modalMobile').textContent = mobileNumber;
+      document.getElementById('modalUserId').textContent = mobileNumber;
+      showModal('userModal');
+    }
+
+    // Payment method selection
+    function showDepositMethodModal() {
+      showModal('paymentMethodModal');
+    }
+
+    function selectPaymentMethod(method) {
+      selectedPaymentMethod = method;
+      closeModal('paymentMethodModal');
+      showDepositModal();
+    }
+
+    function showDepositModal() {
+      // Auto-fill user details
+      document.getElementById('mobileNumber').value = mobileNumber;
+      document.getElementById('paymentReference').value = email;
+      showModal('depositModal');
+    }
+
+    function showWithdrawModal() {
+      // Auto-fill user details
+      document.getElementById('withdrawPhone').value = mobileNumber;
+      document.getElementById('withdrawReference').value = email;
+      showModal('withdrawModal');
+    }
+
+    function showTransferModal() {
+      showModal('transferModal');
+    }
+
+    function showTransactionsModal() {
+      displayTransactions();
+      showModal('transactionsModal');
     }
 
     // Format date and time
@@ -517,7 +686,7 @@
 
       const transactionList = document.getElementById('transactionList');
       if (transactions.length === 0) {
-        transactionList.innerHTML = '<li class="text-gray-400 text-sm">No transactions yet.</li>';
+        transactionList.innerHTML = '<li class="text-gray-400 text-sm text-center py-8">No transactions yet.</li>';
       } else {
         transactionList.innerHTML = '';
         transactions.forEach(tx => {
@@ -547,24 +716,6 @@
         });
       }
     }
-
-    // Tab functionality
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const tabName = button.getAttribute('data-tab');
-        
-        // Remove active class from all buttons and contents
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        
-        // Add active class to clicked button and corresponding content
-        button.classList.add('active');
-        document.getElementById(`${tabName}-tab`).classList.add('active');
-      });
-    });
 
     // Mobile menu functionality
     const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -635,14 +786,14 @@
       const paymentReference = document.getElementById("paymentReference").value.trim();
 
       if (kesAmount < 655) {
-        showModal("Minimum deposit is KES 655 (equivalent to $5).");
+        showSuccessModal("Minimum deposit is KES 655 (equivalent to $5).");
         return;
       }
 
       const amountInUSD = (kesAmount / exchangeRate).toFixed(2);
       depositData = { kesAmount, amountInUSD, mobileNumber, paymentReference };
 
-      showModal("Deposit request has been made! Please follow the payment instructions below.");
+      showSuccessModal("Deposit request has been made! Please follow the payment instructions below.");
       payAmountSpan.textContent = `KES ${kesAmount}`;
       kesEquivalent.textContent = `This equals exactly $${amountInUSD} USD`;
       userMobileSpan.textContent = mobileNumber;
@@ -660,7 +811,7 @@
       const isBlocked = usedIds.includes(enteredMpesaId) || adminBlockedIds.includes(enteredMpesaId);
 
       if (!tgaValid || isBlocked) {
-        showModal("This transaction could not be completed.");
+        showSuccessModal("This transaction could not be completed.");
         return;
       }
 
@@ -695,11 +846,10 @@
       // Hide input
       mpesaIdInput.type = "password";
 
-      showModal(`Deposit successful. You deposited KES ${depositData.kesAmount} which equals $${depositData.amountInUSD} USD.`, () => {
+      showSuccessModal(`Deposit successful. You deposited KES ${depositData.kesAmount} which equals $${depositData.amountInUSD} USD.`, () => {
         // Update balances
         document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
         document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
-        displayTransactions();
         
         // Reset form
         depositForm.reset();
@@ -708,6 +858,7 @@
         depositForm.querySelectorAll("input").forEach(i => i.disabled = false);
         mpesaIdInput.type = "text";
         usdEquivalent.textContent = "";
+        closeModal('depositModal');
       });
     });
 
@@ -731,18 +882,18 @@
       const reference = document.getElementById("withdrawReference").value.trim();
 
       if (usdAmount < 30) {
-        showModal("Minimum withdrawal is $30 (≈ KES 3930).");
+        showSuccessModal("Minimum withdrawal is $30 (≈ KES 3930).");
         return;
       }
 
       if (balance < usdAmount) {
-        showModal("Insufficient balance.");
+        showSuccessModal("Insufficient balance.");
         return;
       }
 
       const remaining = balance - usdAmount;
       if (remaining < 20) {
-        showModal("Account must retain at least $20 after withdrawal.");
+        showSuccessModal("Account must retain at least $20 after withdrawal.");
         return;
       }
 
@@ -771,15 +922,15 @@
         time: new Date().toLocaleTimeString(),
       });
 
-      showModal(`Withdrawal of KES ${kesAmount} ( $${usdAmount} ) successful. Funds will be sent to your M-PESA.`, () => {
+      showSuccessModal(`Withdrawal of KES ${kesAmount} ( $${usdAmount} ) successful. Funds will be sent to your M-PESA.`, () => {
         // Update balances
         document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
         document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
-        displayTransactions();
         
         // Reset form
         withdrawForm.reset();
         withdrawUsdEquivalent.textContent = "";
+        closeModal('withdrawModal');
       });
     });
 
@@ -822,25 +973,28 @@
       transactions.unshift(tx);
       localStorage.setItem('transactions', JSON.stringify(transactions));
 
-      transferMessage.textContent = `Successfully transferred $${amount.toFixed(2)} to credits.`;
-      transferMessage.className = 'mt-4 text-sm font-medium text-center text-green-600';
-
-      // Update balances
-      document.getElementById('totalBalance').textContent = `$${(balance + newCredits).toFixed(2)}`;
-      document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
-      document.getElementById('creditBalance').textContent = `$${newCredits.toFixed(2)}`;
-      displayTransactions();
-
-      // Reset form
-      transferForm.reset();
-
-      setTimeout(() => {
+      showSuccessModal(`Successfully transferred $${amount.toFixed(2)} to credits.`, () => {
+        // Update balances
+        document.getElementById('totalBalance').textContent = `$${(balance + newCredits).toFixed(2)}`;
+        document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
+        document.getElementById('creditBalance').textContent = `$${newCredits.toFixed(2)}`;
+        
+        // Reset form
+        transferForm.reset();
         transferMessage.textContent = '';
-      }, 3000);
+        closeModal('transferModal');
+      });
     });
 
-    // Initialize page
-    displayTransactions();
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+      const modals = document.querySelectorAll('.modal-overlay');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.classList.remove('show');
+        }
+      });
+    });
   </script>
 </body>
 </html>
