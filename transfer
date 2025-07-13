@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova Prime | Transfer</title>
+  <link rel="icon" type="image/png" href="nova_favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 w-full bg-white shadow p-4 flex justify-between items-center z-50">
+    <h1 class="text-2xl font-bold text-green-600">Nova Prime</h1>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-md mx-auto mt-24 bg-white p-6 pb-20 rounded-lg shadow flex-grow">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Transfer Balance to Credit</h2>
+    <form id="transferForm" class="space-y-4">
+      <div>
+        <label for="transferAmount" class="block text-sm font-medium text-gray-700 mb-1">Amount to Transfer to credit ($)</label>
+        <input
+          type="number"
+          id="transferAmount"
+          min="1"
+          step="0.01"
+          required
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
+      <button
+        type="submit"
+        class="w-full bg-gray-900 text-white py-2 rounded-lg hover:bg-black transition-colors"
+      >
+        Transfer
+      </button>
+    </form>
+    <p id="message" class="mt-4 text-sm font-medium text-center"></p>
+  </main>
+  
+<!-- Footer -->
+  <footer class="bg-white border-t mt-12">
+    <footer class="fixed bottom-0 left-0 w-full bg-white text-center py-4 text-gray-500 text-sm z-50 shadow">
+      <p>&copy; 2025 Nova Prime Inc. All rights reserved.</p>
+      <div class="space-x-4">
+        <a href="privacy" class="hover:text-green-600">Privacy</a>
+        <a href="terms" class="hover:text-green-600">Terms</a>
+        <a href="help" class="hover:text-green-600">Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const balance = parseFloat(localStorage.getItem('balance') || '0');
+    const credits = parseFloat(localStorage.getItem('credits') || '0');
+    const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+
+    document.getElementById('transferForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const amount = parseFloat(document.getElementById('transferAmount').value);
+      const message = document.getElementById('message');
+
+      if (amount <= 0 || isNaN(amount)) {
+        message.textContent = 'Please enter a valid amount.';
+        message.className = 'text-red-600';
+        return;
+      }
+
+      if (amount > balance) {
+        message.textContent = 'Insufficient balance.';
+        message.className = 'text-red-600';
+        return;
+      }
+
+      const newBalance = balance - amount;
+      const newCredits = credits + amount;
+
+      localStorage.setItem('balance', newBalance.toFixed(2));
+      localStorage.setItem('credits', newCredits.toFixed(2));
+
+      // Create transaction record
+      const now = new Date();
+      const tx = {
+        type: 'Transfer',
+        amount: amount,
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        status: 'Completed'
+      };
+
+      // Push new transaction at the start of the array (top)
+      transactions.unshift(tx);
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+
+      message.textContent = `Successfully transferred $${amount.toFixed(2)} to credits.`;
+      message.className = 'text-green-600';
+
+      setTimeout(() => {
+        window.location.href = 'account';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

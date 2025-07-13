@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nova Prime | Deposit</title>
+  <link rel="icon" type="image/png" href="nova_favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init("WNEjs_ksvkD2yiWv1");
+    })();
+  </script>
+  <style>
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #modalBox {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-radius: 0.5rem;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    #modalBox button {
+      margin-top: 1rem;
+      background-color: #16a34a;
+      color: white;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.375rem;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #modalBox button:hover {
+      background-color: #15803d;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <header class="fixed top-0 left-0 w-full bg-white shadow p-4 flex items-center justify-between z-50">
+    <div class="text-xl font-bold text-green-600">Nova Prime</div>
+  </header>
+
+  <main class="max-w-md mx-auto mt-24 bg-white p-6 pb-20 rounded-lg shadow">
+    <form id="depositForm">
+      <label class="block mb-2 text-sm font-medium text-gray-700">Amount to Deposit (KES):</label>
+      <input type="number" id="depositAmountKES" required class="w-full border border-gray-300 p-2 rounded mb-1" min="655" step="1"/>
+      <p id="usdEquivalent" class="text-xs text-gray-500 italic mb-4"></p>
+
+      <label class="block mb-2 text-sm font-medium text-gray-700">Mobile Number (User ID):</label>
+      <input type="text" id="mobileNumber" required class="w-full border border-gray-300 p-2 rounded mb-4" pattern="\d{9,12}" title="Enter valid mobile number"/>
+
+      <label class="block mb-2 text-sm font-medium text-gray-700">Payment Reference (User Email):</label>
+      <input type="text" id="paymentReference" required class="w-full border border-gray-300 p-2 rounded mb-4"/>
+
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">Deposit</button>
+    </form>
+
+    <div id="mpesaNote" class="mt-6 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded hidden">
+      <p><strong>Important:</strong> Please pay <span id="payAmount"></span> to <strong>MPESA Till Number</strong> <strong>3390928</strong> using your mobile <strong><span id="userMobile"></span></strong>.</p>
+      <p id="kesEquivalent" class="text-sm text-green-700 mt-2 font-semibold"></p>
+      <p>Once payment is complete, enter your <strong>MPESA transaction ID</strong> below to confirm.</p>
+
+      <form id="mpesaConfirmForm" class="mt-4">
+        <label class="block mb-2 text-sm font-medium text-gray-700">MPESA Transaction ID:</label>
+        <input type="text" id="mpesaId" required class="w-full border border-gray-300 p-2 rounded mb-4" />
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Confirm Payment</button>
+      </form>
+    </div>
+  </main>
+
+  <footer class="fixed bottom-0 left-0 w-full bg-white text-center py-4 text-gray-500 text-sm z-50 shadow">
+    <p>&copy; 2025 Nova Prime Inc. All rights reserved.</p>
+    <div class="space-x-4">
+      <a href="privacy" class="hover:text-green-600">Privacy</a>
+      <a href="terms" class="hover:text-green-600">Terms</a>
+      <a href="help" class="hover:text-green-600">Help</a>
+    </div>
+  </footer>
+
+  <div id="modalOverlay" class="flex">
+    <div id="modalBox">
+      <p id="modalMessage"></p>
+      <button id="modalCloseBtn">OK</button>
+    </div>
+  </div>
+
+  <audio id="successSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+
+  <script>
+    const depositForm = document.getElementById("depositForm");
+    const mpesaNote = document.getElementById("mpesaNote");
+    const payAmountSpan = document.getElementById("payAmount");
+    const userMobileSpan = document.getElementById("userMobile");
+    const kesEquivalent = document.getElementById("kesEquivalent");
+    const mpesaConfirmForm = document.getElementById("mpesaConfirmForm");
+    const mpesaIdInput = document.getElementById("mpesaId");
+    const usdEquivalent = document.getElementById("usdEquivalent");
+
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalMessage = document.getElementById("modalMessage");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+
+    const successSound = document.getElementById("successSound");
+
+    const exchangeRate = 131;
+    let depositData = {};
+
+    const adminBlockedIds = ["TG804M3B6E", "TG93ALCLNL", "TG77YHISAZ", "TGC3QME0GP", "TGB6LYC6J4", "TGC3QY1MJV", "TGC3QUK0TD" , "TGC3QME0GP"]; // Add blocked codes here
+
+    function showModal(message) {
+      modalMessage.textContent = message;
+      modalOverlay.style.display = "flex";
+      successSound.play();
+    }
+
+    modalCloseBtn.addEventListener("click", () => {
+      modalOverlay.style.display = "none";
+    });
+
+    document.getElementById("depositAmountKES").addEventListener("input", function () {
+      const kes = parseFloat(this.value);
+      usdEquivalent.textContent = !isNaN(kes)
+        ? `USD Equivalent: $${(kes / exchangeRate).toFixed(2)}`
+        : "";
+    });
+
+    depositForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const kesAmount = parseFloat(document.getElementById("depositAmountKES").value);
+      const mobileNumber = document.getElementById("mobileNumber").value.trim();
+      const paymentReference = document.getElementById("paymentReference").value.trim();
+
+      if (kesAmount < 655) {
+        showModal("Minimum deposit is KES 655 (equivalent to $5).");
+        return;
+      }
+
+      const amountInUSD = (kesAmount / exchangeRate).toFixed(2);
+      depositData = { kesAmount, amountInUSD, mobileNumber, paymentReference };
+
+      showModal("Deposit request has been made! Please follow the payment instructions below.");
+      payAmountSpan.textContent = `KES ${kesAmount}`;
+      kesEquivalent.textContent = `This equals exactly $${amountInUSD} USD`;
+      userMobileSpan.textContent = mobileNumber;
+      mpesaNote.classList.remove("hidden");
+
+      depositForm.querySelector("button").disabled = true;
+      depositForm.querySelectorAll("input").forEach(i => i.disabled = true);
+    });
+
+    mpesaConfirmForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const enteredMpesaId = mpesaIdInput.value.trim().toUpperCase();
+      const tgdValid = /^TGD[A-Z0-9]{7}$/.test(enteredMpesaId);
+      const usedIds = JSON.parse(localStorage.getItem("usedMpesaIds") || "[]");
+      const isBlocked = usedIds.includes(enteredMpesaId) || adminBlockedIds.includes(enteredMpesaId);
+
+      if (!tgDValid || isBlocked) {
+        showModal("This transaction could not be completed.");
+        return;
+      }
+
+      let balance = parseFloat(localStorage.getItem("balance") || "0");
+      balance += parseFloat(depositData.amountInUSD);
+      localStorage.setItem("balance", balance.toFixed(2));
+
+      const transaction = {
+        type: "Deposit",
+        amount: depositData.amountInUSD,
+        date: new Date().toLocaleString(),
+        reference: depositData.paymentReference,
+        mpesaId: enteredMpesaId
+      };
+      const transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+      transactions.unshift(transaction);
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+
+      usedIds.push(enteredMpesaId);
+      localStorage.setItem("usedMpesaIds", JSON.stringify(usedIds));
+
+      // Send confirmation email
+      emailjs.send("service_t8vherg", "template_iy4viee", {
+        mobileNumber: depositData.mobileNumber,
+        amount: depositData.amountInUSD,
+        paymentReference: depositData.paymentReference,
+        mpesaCode: enteredMpesaId,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+      });
+
+      // Hide input
+      mpesaIdInput.type = "password";
+
+      showModal(`Deposit successful. You deposited KES ${depositData.kesAmount} which equals $${depositData.amountInUSD} USD.`);
+
+      modalCloseBtn.onclick = () => {
+        modalOverlay.style.display = "none";
+        window.location.href = "account";
+      };
+    });
+  </script>
+</body>
+</html>

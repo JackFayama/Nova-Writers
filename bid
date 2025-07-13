@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova Prime | Place a Bid</title>
+  <link rel="icon" type="image/png" href="nova_favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init('xDqwEsI0l8B75kyDv'); // Replace with your actual EmailJS public key
+    })();
+  </script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col items-center justify-center p-4">
+  <div class="bg-white shadow-lg rounded-xl p-6 w-full max-w-md">
+    <h1 class="text-2xl font-bold text-green-600 mb-4 text-center">Place Your Bid</h1>
+    
+    <p class="text-sm text-gray-500 mb-2">Current Credits: <span id="currentCredits">0.00</span></p>
+
+    <form onsubmit="handleBidSubmit(event)" class="space-y-4" id="bidForm">
+      <input type="text" name="taskId" id="taskId" placeholder="Task ID" required class="border border-gray-300 p-2 rounded w-full" readonly />
+      <input type="text" name="bidAmount" id="bidAmount" placeholder="Bid Amount (USD)" required class="border border-gray-300 p-2 rounded w-full" readonly />
+      
+      <!-- Hidden full name input, still in form -->
+      <input type="text" name="userFullName" id="userFullName" placeholder="Your Full Name" required class="border border-gray-300 p-2 rounded w-full" readonly style="display:none;" />
+
+      <button type="submit" id="submitBidBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full">
+        Submit Bid
+      </button>
+    </form>
+  </div>
+
+  <!-- Insufficient Credits Modal -->
+  <div id="creditModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm">
+      <h2 class="text-xl font-semibold text-red-600 mb-4">Insufficient Credits</h2>
+      <p class="text-gray-600 mb-4">You need at least <span id="requiredCredits"></span> credit<span id="requiredCreditsPlural"></span> to place a bid.</p>
+      <a href="account" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Buy Credits</a>
+      <button onclick="document.getElementById('creditModal').classList.add('hidden')" class="mt-2 text-sm text-gray-500">Close</button>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm">
+      <h2 class="text-xl font-semibold text-green-600 mb-4">Bid Submitted</h2>
+      <p class="text-gray-600 mb-4">Your bid was placed successfully. <span id="creditsDeducted"></span> credit<span id="creditsPlural"></span> has been deducted.</p>
+      <button onclick="window.location.href='project'" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+        Continue
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskId = urlParams.get('taskId') || '';
+    const taskAmount = urlParams.get('amount') || '';
+
+    const bidFee = taskId.startsWith('TALENT') ? 3 : 2;
+
+    document.getElementById('taskId').value = taskId;
+    document.getElementById('bidAmount').value = taskAmount ? `$${taskAmount}` : '';
+
+    const submitBtn = document.getElementById('submitBidBtn');
+    submitBtn.textContent = `Submit Bid (Cost: ${bidFee} Credit${bidFee > 1 ? 's' : ''})`;
+
+    document.getElementById('requiredCredits').textContent = bidFee;
+    document.getElementById('requiredCreditsPlural').textContent = bidFee > 1 ? 's' : '';
+
+    let credits = parseFloat(localStorage.getItem('credits') || '0');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('currentCredits').textContent = credits.toFixed(2);
+
+      // Autofill full name from localStorage
+      const fullName = localStorage.getItem('fullName') || '';
+      if (fullName) {
+        document.getElementById('userFullName').value = fullName;
+      }
+    });
+
+    function handleBidSubmit(event) {
+      event.preventDefault();
+
+      if (credits >= bidFee) {
+        credits -= bidFee;
+        localStorage.setItem('credits', credits.toFixed(2));
+
+        const bid = {
+          taskId: taskId,
+          amount: taskAmount,
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString(),
+          status: 'Unpaid',
+          bidFee: bidFee
+        };
+
+        const bids = JSON.parse(localStorage.getItem('bids') || '[]');
+        bids.push(bid);
+        localStorage.setItem('bids', JSON.stringify(bids));
+
+        // Send bid submission email via EmailJS
+        const form = document.getElementById('bidForm');
+        emailjs.sendForm('service_80rez0c', 'template_7tmoouc', form)
+          .then(() => {
+            document.getElementById('creditsDeducted').textContent = bidFee;
+            document.getElementById('creditsPlural').textContent = bidFee > 1 ? 's' : '';
+            document.getElementById('successModal').classList.remove('hidden');
+          })
+          .catch(error => {
+            alert("Email sending failed. Please try again.");
+            console.error(error);
+          });
+
+      } else {
+        document.getElementById('creditModal').classList.remove('hidden');
+      }
+    }
+  </script>
+
+  <footer class="bg-white border-t mt-12">
+    <footer class="fixed bottom-0 left-0 w-full bg-white text-center py-4 text-gray-500 text-sm z-50 shadow">
+      <p>&copy; 2025 Nova Prime Inc. All rights reserved.</p>
+      <div class="space-x-4">
+        <a href="privacy" class="hover:text-green-600">Privacy</a>
+        <a href="terms" class="hover:text-green-600">Terms</a>
+        <a href="help" class="hover:text-green-600">Help</a>
+      </div>
+    </footer>
+  </footer>
+</body>
+</html>

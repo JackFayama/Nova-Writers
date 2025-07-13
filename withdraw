@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nova Prime | Withdraw</title>
+  <link rel="icon" type="image/png" href="nova_favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init("WNEjs_ksvkD2yiWv1");
+    })();
+  </script>
+  <style>
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #modalBox {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-radius: 0.5rem;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    #modalBox button {
+      margin-top: 1rem;
+      background-color: #16a34a;
+      color: white;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.375rem;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #modalBox button:hover {
+      background-color: #15803d;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <div class="text-xl font-bold text-green-600">Nova Prime</div>
+  </header>
+
+  <main class="max-w-md mx-auto mt-10 bg-white p-6 pb-20 rounded-lg shadow">
+    <form id="withdrawForm">
+      <label class="block mb-2 text-sm font-medium text-gray-700">Amount to Withdraw (KES):</label>
+      <input type="number" id="withdrawAmountKES" required class="w-full border border-gray-300 p-2 rounded mb-1" min="3930" step="1" />
+      <p id="usdEquivalent" class="text-xs text-gray-500 italic mb-4"></p>
+
+      <label class="block mb-2 text-sm font-medium text-gray-700">Mobile Number (User ID):</label>
+      <input type="text" id="withdrawPhone" required class="w-full border border-gray-300 p-2 rounded mb-4" />
+
+      <label class="block mb-2 text-sm font-medium text-gray-700">Reference Note (User Email):</label>
+      <input type="text" id="withdrawReference" required class="w-full border border-gray-300 p-2 rounded mb-4" />
+
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">Withdraw</button>
+    </form>
+  </main>
+
+  <footer class="fixed bottom-0 left-0 w-full bg-white text-center py-4 text-gray-500 text-sm z-50 shadow">
+    <p>&copy; 2025 Nova Prime Inc. All rights reserved.</p>
+    <div class="space-x-4">
+      <a href="privacy" class="hover:text-green-600">Privacy</a>
+      <a href="terms" class="hover:text-green-600">Terms</a>
+      <a href="help" class="hover:text-green-600">Help</a>
+    </div>
+  </footer>
+
+  <div id="modalOverlay" class="flex">
+    <div id="modalBox">
+      <p id="modalMessage" class="mb-2"></p>
+      <button id="modalCloseBtn">OK</button>
+    </div>
+  </div>
+
+  <audio id="successSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+
+  <script>
+    const exchangeRate = 131;
+    const withdrawForm = document.getElementById("withdrawForm");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalMessage = document.getElementById("modalMessage");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+    const successSound = document.getElementById("successSound");
+
+    function showModal(message) {
+      modalMessage.textContent = message;
+      modalOverlay.style.display = "flex";
+      successSound.play();
+    }
+
+    modalCloseBtn.addEventListener("click", () => {
+      modalOverlay.style.display = "none";
+      window.location.href = "account";
+    });
+
+    document.getElementById("withdrawAmountKES").addEventListener("input", function () {
+      const kes = parseFloat(this.value);
+      const usd = document.getElementById("usdEquivalent");
+      usd.textContent = !isNaN(kes)
+        ? `USD Equivalent: $${(kes / exchangeRate).toFixed(2)}`
+        : "";
+    });
+
+    withdrawForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const kesAmount = parseFloat(document.getElementById("withdrawAmountKES").value);
+      const usdAmount = parseFloat((kesAmount / exchangeRate).toFixed(2));
+      const phone = document.getElementById("withdrawPhone").value.trim();
+      const reference = document.getElementById("withdrawReference").value.trim();
+
+      if (usdAmount < 30) {
+        showModal("Minimum withdrawal is $30 (≈ KES 3930).");
+        return;
+      }
+
+      let balance = parseFloat(localStorage.getItem("balance") || "0");
+
+      if (balance < usdAmount) {
+        showModal("Insufficient balance.");
+        return;
+      }
+
+      const remaining = balance - usdAmount;
+      if (remaining < 20) {
+        showModal("Account must retain at least $20 after withdrawal.");
+        return;
+      }
+
+      localStorage.setItem("balance", remaining.toFixed(2));
+
+      const transaction = {
+        type: "Withdrawal",
+        amount: usdAmount.toFixed(2),
+        date: new Date().toLocaleString(),
+        reference,
+        phone
+      };
+
+      const transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+      transactions.unshift(transaction);
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+
+      // ✅ Send withdrawal notification email
+      emailjs.send("service_t8vherg", "template_sqgf423", {
+        mobileNumber: phone,
+        amount: usdAmount.toFixed(2),
+        paymentReference: reference,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+      })
+      .then(() => {
+        console.log("Withdrawal email sent");
+      })
+      .catch((err) => {
+        console.error("EmailJS error:", err);
+      });
+
+      showModal(`Withdrawal of KES ${kesAmount} ( $${usdAmount} ) successful. Funds will be sent to your M-PESA.`);
+    });
+  </script>
+</body>
+</html>
