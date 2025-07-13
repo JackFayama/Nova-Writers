@@ -6,237 +6,73 @@
   <title>Nova Prime | Account </title>
   <link rel="icon" type="image/png" href="nova_favicon.png">
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Hide scrollbar but keep scrolling functionality */
-    body {
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* Internet Explorer 10+ */
-    }
-    body::-webkit-scrollbar {
-      display: none; /* WebKit */
-    }
-    
-    /* Ensure footer stays fixed on all devices */
-    .fixed-footer {
-      position: fixed !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      z-index: 50 !important;
-    }
-    
-    /* Professional mobile menu dropdown */
-    .mobile-dropdown {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      min-width: 200px;
-      max-width: 280px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-      transform: translateY(-10px);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.2s ease-out;
-    }
-    
-    .mobile-dropdown.show {
-      transform: translateY(0);
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    .mobile-dropdown::before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      right: 16px;
-      width: 16px;
-      height: 16px;
-      background: white;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      border-bottom: none;
-      border-right: none;
-      transform: rotate(45deg);
-    }
-  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
-  <!-- Navigation Bar -->
-  <header class="fixed top-0 left-0 w-full z-50 bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center relative">
-      <div class="flex items-center space-x-3">
-        <h1 class="text-2xl font-bold text-green-600">Nova Prime</h1>
-      </div>
-      
-      <!-- Desktop Navigation -->
-      <nav class="hidden md:flex space-x-6 text-sm">
-        <a href="client" class="hover:text-green-600 transition-colors font-medium">Find Talent</a>
-        <a href="task" class="hover:text-green-600 transition-colors font-medium">Find Work</a>
-        <a href="project" class="hover:text-green-600 transition-colors font-medium">My Projects</a>
-        <a href="account" class="text-green-600 font-medium">My Account</a>
-      </nav>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
 
-      <!-- User Info (Desktop) -->
-      <div class="hidden md:block text-sm text-gray-600 text-right">
-        <span id="welcomeName">User</span><br />
-        <span class="text-xs text-gray-500">User ID: <span id="userId">0000000000</span></span>
-      </div>
-
-      <!-- Mobile Menu Button -->
-      <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
-        <svg id="hamburger-icon" class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-        <svg id="close-icon" class="w-6 h-6 text-gray-600 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-
-      <!-- Professional Mobile Navigation Dropdown -->
-      <div id="mobile-menu" class="md:hidden mobile-dropdown">
-        <div class="py-2 border-b border-gray-100">
-          <div class="px-4 py-2 text-sm text-gray-600">
-            <span id="mobileWelcomeName">User</span><br />
-            <span class="text-xs text-gray-500">User ID: <span id="mobileUserId">0000000000</span></span>
-          </div>
-        </div>
-        <nav class="py-2">
-          <a href="client" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Find Talent</a>
-          <a href="task" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">Find Work</a>
-          <a href="project" class="block py-3 px-4 text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all font-medium border-b border-gray-100">My Projects</a>
-          <a href="account" class="block py-3 px-4 text-green-600 bg-green-50 font-medium">My Account</a>
-        </nav>
-      </div>
+  <!-- Top Bar -->
+  <header class="fixed top-0 left-0 w-full bg-white shadow p-4 flex justify-between items-center z-50">
+    <h1 class="text-2xl font-bold text-green-600">Nova Prime</h1>
+    <div class="text-sm text-gray-600">
+      <span id="welcomeName">User</span><br />
+      <span class="text-xs text-gray-500">User ID: <span id="userId">0000000000</span></span>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="pt-20 pb-32">
-    <!-- Account Overview Section -->
-    <section class="py-4 sm:py-8">
-      <div class="max-w-6xl mx-auto px-4">
-        <!-- Balance Overview -->
-        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
-          <div class="text-left mb-6">
-            <h2 class="text-2xl font-bold mb-2 text-gray-800">Account Overview</h2>
-          </div>
-          
-          <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 sm:p-6 rounded-xl shadow-lg border border-green-200 text-center">
-              <p class="text-green-700 text-sm sm:text-base font-medium">Total Balance</p>
-              <h3 id="totalBalance" class="text-xl sm:text-2xl font-bold text-green-600">$0.00</h3>
-            </div>
-            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-gray-100 text-center hover:shadow-xl transition-shadow">
-              <p class="text-gray-500 text-sm sm:text-base font-medium">Available</p>
-              <h3 id="availableBalance" class="text-lg sm:text-xl font-semibold text-gray-800">$0.00</h3>
-            </div>
-            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-gray-100 text-center hover:shadow-xl transition-shadow">
-              <p class="text-gray-500 text-sm sm:text-base font-medium">Pending</p>
-              <h3 class="text-lg sm:text-xl font-semibold text-gray-800">$0.00</h3>
-            </div>
-            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-gray-100 text-center hover:shadow-xl transition-shadow">
-              <p class="text-gray-500 text-sm sm:text-base font-medium">Credits</p>
-              <h3 id="creditBalance" class="text-lg sm:text-xl font-semibold text-gray-800">$0.00</h3>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="flex flex-wrap gap-4">
-            <a href="deposit" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Deposit
-            </a>
-            <a href="withdraw" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Withdraw
-            </a>
-            <a href="transfer" class="bg-white text-gray-700 px-6 py-3 rounded-lg border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Transfer
-            </a>
-          </div>
-        </div>
-
-        <!-- Recent Transactions -->
-        <div class="bg-white rounded-2xl shadow-sm p-6">
-          <div class="text-left mb-6">
-            <h3 class="text-2xl font-bold mb-2 text-gray-800">Recent Transactions</h3>
-          </div>
-          
-          <div class="min-h-[200px]">
-            <ul class="space-y-4" id="transactionList"></ul>
-          </div>
-        </div>
+  <!-- Main Section -->
+  <main class="max-w-5xl mx-auto mt-20 p-4 flex-grow">
+    <!-- Balance Overview -->
+    <section class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow text-center">
+        <p class="text-gray-500 text-sm sm:text-base">Total Balance</p>
+        <h2 id="totalBalance" class="text-xl sm:text-2xl font-bold text-green-600">$0.00</h2>
       </div>
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow text-center">
+        <p class="text-gray-500 text-sm sm:text-base">Available</p>
+        <h2 id="availableBalance" class="text-lg sm:text-xl font-semibold">$0.00</h2>
+      </div>
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow text-center">
+        <p class="text-gray-500 text-sm sm:text-base">Pending</p>
+        <h2 class="text-lg sm:text-xl font-semibold">$0.00</h2>
+      </div>
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow text-center">
+        <p class="text-gray-500 text-sm sm:text-base">Credits</p>
+        <h2 id="creditBalance" class="text-lg sm:text-xl font-semibold">$0.00</h2>
+      </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="flex flex-wrap gap-4 mb-6">
+      <a href="deposit.html" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">Deposit</a>
+      <a href="withdraw.html" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">Withdraw</a>
+      <a href="transfer.html" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg">Transfer</a>
+    </section>
+
+    <!-- Recent Transactions -->
+    <section class="bg-white p-6 rounded-xl shadow min-h-[200px]">
+      <h3 class="text-xl font-semibold mb-4 text-gray-800">Recent Transactions</h3>
+      <ul class="space-y-4" id="transactionList"></ul>
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="fixed-footer bg-white text-center py-4 text-gray-500 text-sm shadow-lg border-t border-gray-200">
-    <p class="font-medium">&copy; 2025 Nova Prime Inc. All rights reserved.</p>
-    <div class="space-x-4 mt-1">
-      <a href="privacy" class="hover:text-green-600 transition-colors">Privacy</a>
-      <a href="terms" class="hover:text-green-600 transition-colors">Terms</a>
-      <a href="help" class="hover:text-green-600 transition-colors">Help</a>
-    </div>
+  <footer class="bg-white border-t mt-12">
+    <footer class="fixed bottom-0 left-0 w-full bg-white text-center py-4 text-gray-500 text-sm z-50 shadow">
+      <p>&copy; 2025 Nova Prime Inc. All rights reserved.</p>
+      <div class="space-x-4">
+        <a href="privacy" class="hover:text-green-600">Privacy</a>
+        <a href="terms" class="hover:text-green-600">Terms</a>
+        <a href="help" class="hover:text-green-600">Help</a>
+      </div>
+    </footer>
   </footer>
 
   <script>
-    const fullName = localStorage.getItem('fullName') || 'John Doe';
-    const mobileNumber = localStorage.getItem('mobileNumber') || '1234567890';
-    let balance = parseFloat(localStorage.getItem('balance') || '1250.75');
-    const credits = parseFloat(localStorage.getItem('credits') || '50.00');
+    const fullName = localStorage.getItem('fullName') || 'User';
+    const mobileNumber = localStorage.getItem('mobileNumber') || '0000000000';
+    let balance = parseFloat(localStorage.getItem('balance') || '0');
+    const credits = parseFloat(localStorage.getItem('credits') || '0');
     let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
     const paidTasks = JSON.parse(localStorage.getItem('paidTasks') || '[]');
     let newPaymentAdded = false;
-
-    // Initialize with sample data if no transactions exist
-    if (transactions.length === 0) {
-      transactions = [
-        {
-          id: 1,
-          type: 'Task Payment',
-          amount: 150.00,
-          date: 'Jan 15, 2025',
-          time: '2:30 PM',
-          status: 'Paid'
-        },
-        {
-          id: 2,
-          type: 'Deposit',
-          amount: 500.00,
-          date: 'Jan 14, 2025',
-          time: '10:15 AM',
-          status: 'Completed'
-        },
-        {
-          id: 3,
-          type: 'Transfer',
-          amount: 75.25,
-          date: 'Jan 13, 2025',
-          time: '4:45 PM',
-          status: 'Completed'
-        },
-        {
-          id: 4,
-          type: 'Task Payment',
-          amount: 200.00,
-          date: 'Jan 12, 2025',
-          time: '11:20 AM',
-          status: 'Paid'
-        },
-        {
-          id: 5,
-          type: 'Withdraw',
-          amount: 100.00,
-          date: 'Jan 11, 2025',
-          time: '3:15 PM',
-          status: 'Completed'
-        }
-      ];
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-    }
 
     // Add new task payments to transactions if not already logged
     paidTasks.forEach(task => {
@@ -261,19 +97,13 @@
     localStorage.setItem('balance', balance.toFixed(2));
 
     if (newPaymentAdded) {
-      try {
-        const audio = new Audio('https://notificationsounds.com/storage/sounds/file-sounds-1150-pristine.mp3');
-        audio.play().catch(e => console.log('Audio play failed:', e));
-      } catch (e) {
-        console.log('Audio creation failed:', e);
-      }
+      const audio = new Audio('https://notificationsounds.com/storage/sounds/file-sounds-1150-pristine.mp3');
+      audio.play();
     }
 
     // Display user info and balances
     document.getElementById('welcomeName').textContent = fullName;
     document.getElementById('userId').textContent = mobileNumber;
-    document.getElementById('mobileWelcomeName').textContent = fullName;
-    document.getElementById('mobileUserId').textContent = mobileNumber;
     document.getElementById('totalBalance').textContent = `$${(balance + credits).toFixed(2)}`;
     document.getElementById('availableBalance').textContent = `$${balance.toFixed(2)}`;
     document.getElementById('creditBalance').textContent = `$${credits.toFixed(2)}`;
@@ -304,88 +134,28 @@
         const li = document.createElement('li');
         const isDeposit = tx.type === 'Deposit' || tx.type === 'Task Payment';
         const isTransfer = tx.type === 'Transfer';
-        li.className = `group bg-white p-6 shadow-lg hover:shadow-xl rounded-xl cursor-pointer border border-gray-100 hover:border-green-200 transition-all duration-300 transform hover:-translate-y-1`;
+        li.className = `p-4 rounded-lg shadow border-l-4 ${
+          isTransfer ? 'border-black bg-gray-50' : (isDeposit ? 'border-green-500 bg-green-50' : 'border-blue-500 bg-blue-50')
+        }`;
         li.innerHTML = `
           <div class="flex justify-between items-center">
-            <div class="flex items-center">
-              <div class="w-12 h-12 ${
-                isTransfer ? 'bg-gradient-to-br from-gray-100 to-gray-200' : 
-                (isDeposit ? 'bg-gradient-to-br from-green-100 to-green-200' : 'bg-gradient-to-br from-blue-100 to-blue-200')
-              } rounded-xl flex items-center justify-center mr-4">
-                <svg class="w-6 h-6 ${
-                  isTransfer ? 'text-gray-600' : (isDeposit ? 'text-green-600' : 'text-blue-600')
-                }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  ${isTransfer ? 
-                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>' :
-                    (isDeposit ? 
-                      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>' :
-                      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>'
-                    )
-                  }
-                </svg>
-              </div>
-              <div>
-                <p class="font-bold text-gray-800 group-hover:text-green-600 transition-colors duration-300">${tx.type}</p>
-                <p class="text-sm text-gray-500">${formatDateTime(tx.date, tx.time)}</p>
-              </div>
+            <div>
+              <p class="font-semibold text-gray-800">${tx.type}</p>
+              <p class="text-xs text-gray-500">${formatDateTime(tx.date, tx.time)}</p>
             </div>
             <div class="text-right">
               <p class="text-lg font-bold ${
-                isTransfer ? 'text-gray-800' : (isDeposit ? 'text-green-600' : 'text-blue-600')
+                isTransfer ? 'text-black' : (isDeposit ? 'text-green-600' : 'text-blue-600')
               }">
                 ${isTransfer ? '-' : (isDeposit ? '+' : '-')} $${parseFloat(tx.amount).toFixed(2)}
               </p>
-              <p class="text-sm text-gray-400 mt-1">${tx.status || 'Completed'}</p>
+              <p class="text-xs text-gray-400 mt-1">${tx.status || 'Completed'}</p>
             </div>
           </div>
         `;
         transactionList.appendChild(li);
       });
     }
-
-    // Mobile menu functionality
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const hamburgerIcon = document.getElementById('hamburger-icon');
-    const closeIcon = document.getElementById('close-icon');
-
-    mobileMenuButton.addEventListener('click', function() {
-      const isMenuOpen = mobileMenu.classList.contains('show');
-      
-      if (isMenuOpen) {
-        // Close menu
-        mobileMenu.classList.remove('show');
-        hamburgerIcon.classList.remove('hidden');
-        closeIcon.classList.add('hidden');
-      } else {
-        // Open menu
-        mobileMenu.classList.add('show');
-        hamburgerIcon.classList.add('hidden');
-        closeIcon.classList.remove('hidden');
-      }
-    });
-
-    // Close mobile menu when clicking on a link
-    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-    mobileMenuLinks.forEach(link => {
-      link.addEventListener('click', function() {
-        mobileMenu.classList.remove('show');
-        hamburgerIcon.classList.remove('hidden');
-        closeIcon.classList.add('hidden');
-      });
-    });
-
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(event) {
-      const isClickInsideMenu = mobileMenu.contains(event.target);
-      const isClickOnButton = mobileMenuButton.contains(event.target);
-      
-      if (!isClickInsideMenu && !isClickOnButton && mobileMenu.classList.contains('show')) {
-        mobileMenu.classList.remove('show');
-        hamburgerIcon.classList.remove('hidden');
-        closeIcon.classList.add('hidden');
-      }
-    });
   </script>
 </body>
 </html>
